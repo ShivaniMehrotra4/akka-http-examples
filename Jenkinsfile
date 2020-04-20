@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	options {
-		retry(3)
+		retry(2)
 	}
 
 	
