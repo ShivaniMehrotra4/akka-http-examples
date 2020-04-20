@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	options {
-		retry(2)
+		retry(3)
 	}
 
 	
@@ -11,56 +11,57 @@ pipeline {
 		stage('Sbt - install') {
 			steps {
 				tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
-				echo "Sbt installed"
+			}
+		}
+
+		// stage('Compile') {
+		// 	steps {
+		// 		sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'	
+		// 	}
+		// }
+
+
+		stage('Compile stages in parallel on slaves') {
+			parallel {
+				stage('Compile - stage 1') {
+					agent {
+						label 'ubuntu-slave-1'
+					}
+					steps {
+						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'
+					}
+				}
+				stage('Compile - stage 1') {
+					agent {
+						label 'ubuntu-slave-2'
+					}
+					steps {
+						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'
+					}
+				}
 			}
 		}
 		
-		stage('Compile') {
-			steps {
-				sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'	
+		stage('Test stages in parallel on slaves') {
+			parallel {
+				stage('Test - stage 2') {
+					agent {
+						label 'ubuntu-slave-1'
+					}
+					steps {
+						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
+					}
+				}
+				stage('test - stage 2') {
+					agent {
+						label 'ubuntu-slave-2'
+					}
+					steps {
+						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
+					}
+				}
 			}
 		}
-	// 	stage('Compile stages in parallel on slaves') {
-	// 		parallel {
-	// 			stage('Compile - stage 1') {
-	// 				agent {
-	// 					label 'ubuntu-1'
-	// 				}
-	// 				steps {
-	// 					sbt clean compile
-	// 				}
-	// 			}
-	// 			stage('Compile - stage 1') {
-	// 				agent {
-	// 					label 'ubuntu-2'
-	// 				}
-	// 				steps {
-	// 					sbt clean compile
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-		
-	// 	stage('Test stages in parallel on slaves') {
-	// 		parallel {
-	// 			stage('Test - stage 2') {
-	// 				agent {
-	// 					label 'ubuntu-1'
-	// 				}
-	// 				steps {
-	// 					sbt test
-	// 				}
-	// 			}
-	// 			stage('test - stage 2') {
-	// 				agent {
-	// 					label 'ubuntu-2'
-	// 				}
-	// 				steps {
-	// 					sbt test
-	// 				}
-	// 			}
-	// 		}
-	// 	}
 	}
 
 
