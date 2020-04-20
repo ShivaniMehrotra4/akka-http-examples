@@ -17,7 +17,7 @@ pipeline {
 		
 		stage('Compile') {
 			steps {
-				sh 'sbt clean compile'	
+				sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'	
 			}
 		}
 	// 	stage('Compile stages in parallel on slaves') {
