@@ -4,7 +4,6 @@ pipeline {
 	options {
 		retry(3)
 		timeout(5)  // minutes bydefault
-		timestamps
 	}
 
 	
