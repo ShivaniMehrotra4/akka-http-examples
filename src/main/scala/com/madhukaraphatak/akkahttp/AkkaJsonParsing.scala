@@ -44,7 +44,7 @@ object AkkaJsonParsing {
           }
       }
 
-    Http().bindAndHandle(route, "localhost", 8080)
+    Http().bindAndHandle(route, "localhost", 8090)
   }
 
 
