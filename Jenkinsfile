@@ -4,7 +4,6 @@ pipeline {
 	options {
 		retry(3)
 		timeout(5)  // minutes bydefault
-		timestamps
 	}
 
 	
@@ -91,34 +90,35 @@ pipeline {
 				}
 			}
 		}
-	}
+	
 
-	stage('Packaging-step Producing Jar') {
-		when {
-			branch 'master'
-		}
-		steps {
-			sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt assembly'
-		}
-	}
-
-	stage('Deploy') {
-		when {
-			branch 'master'
-		}
-		input {
-  			message 'Up for deployment ?'
-  			id 'deploy-id'
-  			ok 'Yeah !'
-  			submitterParameter 'deploy-result'
-  			parameters {
-    			string defaultValue: 'Yes', description: '', name: 'deploy-result', trim: false
-  			}
+		stage('Packaging-step Producing Jar') {
+			when {
+				branch 'master'
+			}
+			steps {
+				sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt assembly'
+			}
 		}
 
-		steps {
-			echo "Ready to take-off (deploy) !!"
-			//sh './deployScript.sh'
+		stage('Deploy') {
+			when {
+				branch 'master'
+			}
+			input {
+	  			message 'Up for deployment ?'
+	  			id 'deploy-id'
+	  			ok 'Yeah !'
+	  			submitterParameter 'deploy-result'
+	  			parameters {
+	    			string defaultValue: 'Yes', description: '', name: 'deploy-result', trim: false
+	  			}
+			}
+
+			steps {
+				echo "Ready to take-off (deploy) !!"
+				//sh './deployScript.sh'
+			}
 		}
 	}
 
