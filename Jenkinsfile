@@ -11,49 +11,50 @@ pipeline {
 		stage('Sbt - install') {
 			steps {
 				tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+				echo "Sbt installed"
 			}
 		}
-		stage('Compile stages in parallel on slaves') {
-			parallel {
-				stage('Compile - stage 1 @slave 1') {
-					agent {
-						label 'ubuntu-1'
-					}
-					steps {
-						sbt clean compile
-					}
-				}
-				stage('compile - stage 1 @slave 2') {
-					agent {
-						label 'ubuntu-2'
-					}
-					steps {
-						sbt clean compile
-					}
-				}
-			}
-		}
+	// 	stage('Compile stages in parallel on slaves') {
+	// 		parallel {
+	// 			stage('Compile - stage 1') {
+	// 				agent {
+	// 					label 'ubuntu-1'
+	// 				}
+	// 				steps {
+	// 					sbt clean compile
+	// 				}
+	// 			}
+	// 			stage('Compile - stage 1') {
+	// 				agent {
+	// 					label 'ubuntu-2'
+	// 				}
+	// 				steps {
+	// 					sbt clean compile
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 		
-		stage('Test stages in parallel on slaves') {
-			parallel {
-				stage('Test - stage 2') {
-					agent {
-						label 'ubuntu-1'
-					}
-					steps {
-						sbt test
-					}
-				}
-				stage('test - stage 2') {
-					agent {
-						label 'ubuntu-2'
-					}
-					steps {
-						sbt test
-					}
-				}
-			}
-		}
+	// 	stage('Test stages in parallel on slaves') {
+	// 		parallel {
+	// 			stage('Test - stage 2') {
+	// 				agent {
+	// 					label 'ubuntu-1'
+	// 				}
+	// 				steps {
+	// 					sbt test
+	// 				}
+	// 			}
+	// 			stage('test - stage 2') {
+	// 				agent {
+	// 					label 'ubuntu-2'
+	// 				}
+	// 				steps {
+	// 					sbt test
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 	}
 
 
