@@ -2,17 +2,38 @@ pipeline {
 	agent any
 
 	options {
-		retry(2)
+		retry(3)
 	}
 
 	
 	stages {
 
-		stage('Sbt - install') {
-			steps {
-				tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+		stage('sbt-install in parallel on slaves') {
+			parallel {
+				stage('sbt install - stage 1 @ slave1') {
+					agent {
+						label 'ubuntu-slave-1'
+					}
+					steps {
+						tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+					}
+				}
+				stage('sbt install - stage 1 @ slave 2') {
+					agent {
+						label 'ubuntu-slave-2'
+					}
+					steps {
+						tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+					}
+				}
 			}
 		}
+
+		// stage('Sbt - install') {
+		// 	steps {
+		// 		tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+		// 	}
+		// }
 
 		// stage('Compile') {
 		// 	steps {
