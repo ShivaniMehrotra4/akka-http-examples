@@ -14,6 +14,12 @@ pipeline {
 				echo "Sbt installed"
 			}
 		}
+		
+		stage('Compile') {
+			steps {
+				sbt clean compile	
+			}
+		}
 	// 	stage('Compile stages in parallel on slaves') {
 	// 		parallel {
 	// 			stage('Compile - stage 1') {
