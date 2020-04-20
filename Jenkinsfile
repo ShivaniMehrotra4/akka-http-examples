@@ -15,7 +15,7 @@ pipeline {
 		}
 		stage('Compile stages in parallel on slaves') {
 			parallel {
-				stage('Compile - stage 1') {
+				stage('Compile - stage 1 @slave 1') {
 					agent {
 						label 'ubuntu-1'
 					}
@@ -23,7 +23,7 @@ pipeline {
 						sbt clean compile
 					}
 				}
-				stage('Compile - stage 1') {
+				stage('compile - stage 1 @slave 2') {
 					agent {
 						label 'ubuntu-2'
 					}
