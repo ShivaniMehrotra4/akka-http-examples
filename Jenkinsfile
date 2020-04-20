@@ -8,7 +8,7 @@ pipeline {
 	
 	stages {
 
-		stage('Sbt - install') {
+		stage('Sbt - hi - install') {
 			steps {
 				tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
 				echo "Sbt installed"
