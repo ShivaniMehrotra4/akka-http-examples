@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	options {
-		retry(3)
+		retry(2)
 	}
 
 	
@@ -23,7 +23,7 @@ pipeline {
 
 		stage('Compile stages in parallel on slaves') {
 			parallel {
-				stage('Compile - stage 1') {
+				stage('Compile - stage 1 @ slave1') {
 					agent {
 						label 'ubuntu-slave-1'
 					}
@@ -31,7 +31,7 @@ pipeline {
 						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'
 					}
 				}
-				stage('Compile - stage 1') {
+				stage('Compile - stage 1 @ slave 2') {
 					agent {
 						label 'ubuntu-slave-2'
 					}
@@ -44,7 +44,7 @@ pipeline {
 		
 		stage('Test stages in parallel on slaves') {
 			parallel {
-				stage('Test - stage 2') {
+				stage('Test - stage 2 @slave 1') {
 					agent {
 						label 'ubuntu-slave-1'
 					}
@@ -52,7 +52,7 @@ pipeline {
 						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
 					}
 				}
-				stage('test - stage 2') {
+				stage('test - stage 2 @slave 2') {
 					agent {
 						label 'ubuntu-slave-2'
 					}
