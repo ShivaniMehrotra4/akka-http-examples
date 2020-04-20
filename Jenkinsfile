@@ -17,7 +17,7 @@ pipeline {
 		
 		stage('Compile') {
 			steps {
-				sbt clean compile	
+				sh 'sbt clean compile'	
 			}
 		}
 	// 	stage('Compile stages in parallel on slaves') {
