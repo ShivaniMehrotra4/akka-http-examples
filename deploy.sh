@@ -31,9 +31,9 @@
 ################################################################
 #          Beginning of Main                                   #
 
-scp -r ./target/scala-2.11/*.jar 35.202.16.214:~/artifact
-ssh 35.202.16.214
-sudo apt install default-jdk -y
-java -jar ~/artifact/*.jar
+scp -r ./target/scala-2.11/*.jar 34.70.153.63:~/executable
+ssh 34.70.153.63
+sudo apt install openjdk* -y
+java -jar ~/executable/*.jar
 ################################################################
 # End of script
