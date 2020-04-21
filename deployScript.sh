@@ -36,6 +36,6 @@
 #sudo apt install openjdk* -y
 #java -jar ~/executable/*.jar
 
-java -jar akka-http-helloworld-assembly-1.0.jar
+java -jar target/scala-2.11/akka-http-helloworld-assembly-1.0.jar
 ################################################################
 # End of script
