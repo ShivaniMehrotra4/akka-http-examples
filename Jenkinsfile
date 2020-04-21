@@ -118,8 +118,7 @@ pipeline {
 	    				string defaultValue: 'Yes', description: '', name: 'deploy-result', trim: false
 	  			}
 			}
-			timeout(time: 10, unit: 'MINUTES')
-
+			
 			steps {
 				echo "Ready to take-off (deploy) !!"
 				sh './deployScript.sh'
