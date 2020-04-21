@@ -105,6 +105,17 @@ pipeline {
 			}
 		}
 
+		stage('Archiving Artifacts') {
+			agent {
+				label 'ubuntu-slave-1'
+			}
+			steps {
+				dir('target/scala-2.11') {
+					step([$class: 'ArtifactArchiver', artifacts: 'akka-http-helloworld-assembly-1.0.jar'])
+				}
+			}
+		}
+
 		stage('Deploy') {
 			when {
 				branch 'master'
