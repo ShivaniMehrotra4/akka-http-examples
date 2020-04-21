@@ -138,7 +138,7 @@ pipeline {
 		}
 
 		failure {
-			echo 'There was a failure"
+			echo 'There was a failure'
 		}
 
 		success {
