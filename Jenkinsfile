@@ -117,7 +117,7 @@ pipeline {
 
 			steps {
 				echo "Ready to take-off (deploy) !!"
-				//sh './deployScript.sh'
+				sh './deployScript.sh'
 			}
 		}
 	}
@@ -127,21 +127,22 @@ pipeline {
 			echo "I execute always."
 			mail bcc: '', body: '''Hey !
 			************************************
-			Job Name : ${JOB_NAME}
-			Build Number : ${BUILD_NUMBER}
-			Build Name : ${BUILD_DISPLAY_NAME}
+			Job Name : ${env.JOB_NAME}
+			Build Number : ${env.BUILD_NUMBER}
+			Build Name : ${env.BUILD_DISPLAY_NAME}
 			Build Status : ${currentBuild.result}
 			************************************''', cc: '', from: '', replyTo: '', subject: 'Status Jenkins Pipeline ', to: 'shivanimehrotra.sms@gmail.com'
 
 		}
 
 		failure {
-			echo 'I am executed only when there is a failure.'
-
+			echo 'There was a failure"
 		}
 
 		success {
 			echo 'I am executed only when there is a success.'
+			echo 'Cleaning up the workspace now'
+			cleanWs()
 		}
 
 		aborted {
