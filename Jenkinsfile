@@ -106,6 +106,9 @@ pipeline {
 		}
 
 		stage('Archiving Artifacts') {
+			when {
+				branch 'master'
+			}
 			agent {
 				label 'ubuntu-slave-1'
 			}
