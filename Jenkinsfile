@@ -5,7 +5,9 @@ pipeline {
 		retry(3)
 		timeout(5)  // minutes bydefault
 	}
-
+	triggers {
+		cron('H/15 * * * *')	
+	}
 	
 	stages {
 
