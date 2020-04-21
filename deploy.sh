@@ -31,9 +31,11 @@
 ################################################################
 #          Beginning of Main                                   #
 
-scp -r ./target/scala-2.11/*.jar 34.70.153.63:~/executable
-ssh 34.70.153.63
-sudo apt install openjdk* -y
-java -jar ~/executable/*.jar
+#scp -r ./target/scala-2.11/*.jar 34.70.153.63:~/executable
+#ssh 34.70.153.63
+#sudo apt install openjdk* -y
+#java -jar ~/executable/*.jar
+
+java -jar akka-http-helloworld-assembly-1.0.jar
 ################################################################
 # End of script
