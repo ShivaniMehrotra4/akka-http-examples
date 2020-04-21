@@ -129,10 +129,10 @@ pipeline {
 			echo "I execute always."
 			mail bcc: '', body: '''Hey !
 			************************************
-			Job Name : ${env.JOB_NAME}
-			Build Number : ${env.BUILD_NUMBER}
-			Build Name : ${env.BUILD_DISPLAY_NAME}
-			Build Status : ${currentBuild.result}
+			Job Name : "${env.JOB_NAME}"
+			Build Number : "${env.BUILD_NUMBER}"
+			Build Name : "${env.BUILD_DISPLAY_NAME}"
+			Build Status : "${currentBuild.result}"
 			************************************''', cc: '', from: '', replyTo: '', subject: 'Status Jenkins Pipeline ', to: 'shivanimehrotra.sms@gmail.com'
 
 		}
