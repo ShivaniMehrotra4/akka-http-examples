@@ -5,8 +5,11 @@ pipeline {
 		retry(2)
 		timeout(time: 15, unit: 'MINUTES') // minutes bydefault
 	}
-	triggers {
-		cron('H/10 * * * *')	
+	triggers{ 
+		cron('H H 1,15 1-11 *') 
+	}
+	environment {
+		sbt_path = '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt'
 	}
 	
 	stages {
@@ -51,7 +54,7 @@ pipeline {
 						label 'ubuntu-slave-1'
 					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'
+						sh '$sbt_path clean compile'
 					}
 				}
 				stage('Compile - stage 1 @ slave 2') {
@@ -59,7 +62,7 @@ pipeline {
 						label 'ubuntu-slave-2'
 					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'
+						sh '$sbt_path clean compile'
 					}
 				}
 			}
@@ -75,7 +78,7 @@ pipeline {
 						label 'ubuntu-slave-1'
 					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
+						sh '$sbt_path test'
 					}
 				}
 				stage('test - stage 2 @slave 2') {
@@ -83,7 +86,7 @@ pipeline {
 						label 'ubuntu-slave-2'
 					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
+						sh '$sbt_path test'
 					}
 				}
 			}
@@ -98,7 +101,7 @@ pipeline {
 				label 'ubuntu-slave-1'	
 			}
 			steps {
-				sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt assembly'
+				sh '$sbt_path assembly'
 			}
 		}
 
