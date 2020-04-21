@@ -2,15 +2,14 @@ pipeline {
 	agent any
 
 	options {
-		retry(3)
-		timeout(5)  // minutes bydefault
+		retry(2)
+		timeout(time: 15, unit: 'MINUTES') // minutes bydefault
 	}
 	triggers {
-		cron('H/15 * * * *')	
+		cron('H/10 * * * *')	
 	}
 	
 	stages {
-
 		stage('sbt-install in parallel on slaves') {
 			parallel {
 				stage('sbt install - stage 1 @ slave1') {
@@ -67,13 +66,13 @@ pipeline {
 		}
 		
 		stage('Test stages in parallel on slaves') {
+			when {
+				branch 'test-branch'
+			}
 			parallel {
 				stage('Test - stage 2 @slave 1') {
 					agent {
 						label 'ubuntu-slave-1'
-					}
-					when {
-						branch 'test-branch'
 					}
 					steps {
 						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
@@ -82,9 +81,6 @@ pipeline {
 				stage('test - stage 2 @slave 2') {
 					agent {
 						label 'ubuntu-slave-2'
-					}
-					when {
-						branch 'test-branch'
 					}
 					steps {
 						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
@@ -98,6 +94,9 @@ pipeline {
 			when {
 				branch 'master'
 			}
+			agent {
+				label 'ubuntu-slave-1'	
+			}
 			steps {
 				sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt assembly'
 			}
@@ -107,15 +106,19 @@ pipeline {
 			when {
 				branch 'master'
 			}
+			agent {
+				label 'ubuntu-slave-1'	
+			}
 			input {
 	  			message 'Up for deployment ?'
 	  			id 'deploy-id'
 	  			ok 'Yeah !'
 	  			submitterParameter 'deploy-result'
 	  			parameters {
-	    			string defaultValue: 'Yes', description: '', name: 'deploy-result', trim: false
+	    				string defaultValue: 'Yes', description: '', name: 'deploy-result', trim: false
 	  			}
 			}
+			timeout(time: 10, unit: 'MINUTES')
 
 			steps {
 				echo "Ready to take-off (deploy) !!"
@@ -127,13 +130,9 @@ pipeline {
 	post {
 		always {
 			echo "I execute always."
-			mail bcc: '', body: '''Hey !
-			************************************
-			Job Name : "${env.JOB_NAME}"
-			Build Number : "${env.BUILD_NUMBER}"
-			Build Name : "${env.BUILD_DISPLAY_NAME}"
-			Build Status : "${currentBuild.result}"
-			************************************''', cc: '', from: '', replyTo: '', subject: 'Status Jenkins Pipeline ', to: 'shivanimehrotra.sms@gmail.com'
+			mail to: 'shivanimehrotra.sms@gmail.com',
+                      	subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) has been completed.",
+                      	body: "Please go to ${BUILD_URL} and check for the status"
 
 		}
 
