@@ -2,15 +2,17 @@ pipeline {
 	agent any
 
 	options {
-		retry(3)
-		timeout(5)  // minutes bydefault
+		retry(2)
+		timeout(time: 15, unit: 'MINUTES') // minutes bydefault
 	}
-	triggers {
-		cron('H/15 * * * *')	
+	triggers{ 
+		cron('H H 1,15 1-11 *') 
+	}
+	environment {
+		sbt_path = '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt'
 	}
 	
 	stages {
-
 		stage('sbt-install in parallel on slaves') {
 			parallel {
 				stage('sbt install - stage 1 @ slave1') {
@@ -52,7 +54,7 @@ pipeline {
 						label 'ubuntu-slave-1'
 					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'
+						sh '$sbt_path clean compile'
 					}
 				}
 				stage('Compile - stage 1 @ slave 2') {
@@ -60,34 +62,31 @@ pipeline {
 						label 'ubuntu-slave-2'
 					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt clean compile'
+						sh '$sbt_path clean compile'
 					}
 				}
 			}
 		}
 		
 		stage('Test stages in parallel on slaves') {
+			when {
+				branch 'test-branch'
+			}
 			parallel {
 				stage('Test - stage 2 @slave 1') {
 					agent {
 						label 'ubuntu-slave-1'
 					}
-					when {
-						branch 'test-branch'
-					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
+						sh '$sbt_path test'
 					}
 				}
 				stage('test - stage 2 @slave 2') {
 					agent {
 						label 'ubuntu-slave-2'
 					}
-					when {
-						branch 'test-branch'
-					}
 					steps {
-						sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt test'
+						sh '$sbt_path test'
 					}
 				}
 			}
@@ -98,8 +97,37 @@ pipeline {
 			when {
 				branch 'master'
 			}
+			agent {
+				label 'ubuntu-slave-1'	
+			}
 			steps {
-				sh '/home/knoldus/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt assembly'
+				sh '$sbt_path assembly'
+			}
+		}
+
+		stage('Archiving Artifacts') {
+			when {
+				branch 'master'
+			}
+			agent {
+				label 'ubuntu-slave-1'
+			}
+			steps {
+				sh '$sbt_path assembly'
+			}
+		}
+
+		stage('Archiving Artifacts') {
+			when {
+				branch 'master'
+			}
+			agent {
+				label 'ubuntu-slave-1'
+			}
+			steps {
+				dir('target/scala-2.11') {
+					step([$class: 'ArtifactArchiver', artifacts: 'akka-http-helloworld-assembly-1.0.jar'])
+				}
 			}
 		}
 
@@ -107,16 +135,19 @@ pipeline {
 			when {
 				branch 'master'
 			}
+			agent {
+				label 'ubuntu-slave-1'	
+			}
 			input {
 	  			message 'Up for deployment ?'
 	  			id 'deploy-id'
 	  			ok 'Yeah !'
 	  			submitterParameter 'deploy-result'
 	  			parameters {
-	    			string defaultValue: 'Yes', description: '', name: 'deploy-result', trim: false
+	    				string defaultValue: 'Yes', description: '', name: 'deploy-result', trim: false
 	  			}
 			}
-
+			
 			steps {
 				echo "Ready to take-off (deploy) !!"
 				sh './deployScript.sh'
@@ -127,13 +158,9 @@ pipeline {
 	post {
 		always {
 			echo "I execute always."
-			mail bcc: '', body: '''Hey !
-			************************************
-			Job Name : ${env.JOB_NAME}
-			Build Number : ${env.BUILD_NUMBER}
-			Build Name : ${env.BUILD_DISPLAY_NAME}
-			Build Status : ${currentBuild.result}
-			************************************''', cc: '', from: '', replyTo: '', subject: 'Status Jenkins Pipeline ', to: 'shivanimehrotra.sms@gmail.com'
+			mail to: 'shivanimehrotra.sms@gmail.com',
+                      	subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) has been completed.",
+                      	body: "Please go to ${BUILD_URL} and check for the status"
 
 		}
 
@@ -153,3 +180,4 @@ pipeline {
 	}
 
 }
+
